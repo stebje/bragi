@@ -1,0 +1,22 @@
+{
+  "name": "bragi",
+  "version": "1.0.0",
+  "description": "A GitHub Action that helps you write better documentation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stebje/bragi.git"
+  },
+  "keywords": [
+    "readability"
+  ],
+  "author": "Steffen Bjerkenås",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stebje/bragi/issues"
+  },
+  "homepage": "https://github.com/stebje/bragi#readme"
+}

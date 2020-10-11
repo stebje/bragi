@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/stebje/bragi/issues"
   },
-  "homepage": "https://github.com/stebje/bragi#readme"
+  "homepage": "https://github.com/stebje/bragi#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "text-readability": "^1.0.5"
+  }
 }

@@ -1,10 +1,11 @@
 const rs = require('text-readability')
 const core = require('@actions/core')
+const github = require('@actions/github');
 
 async function run() {
-    //TODO Get secret/credentials (org/repo secret/GITHUB_TOKEN)
-
-    //TODO Create API client
+    //Create API client
+    const authToken = core.getInput('authToken');
+    const octokit = github.getOctokit(authToken)
 
     //TODO Get text to be checked
 

@@ -22,6 +22,7 @@
   "homepage": "https://github.com/stebje/bragi#readme",
   "dependencies": {
     "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
     "text-readability": "^1.0.5"
   }
 }

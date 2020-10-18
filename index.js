@@ -22,27 +22,18 @@ async function run() {
     const context = github.context;
 
     // Collect scoped files and pass to parser
-    // TODO Add support for arrays
-    let filePath = 'README.md'
-    console.log('Calling content parser...')
-    const fileContent = await contentParser(octokit, context, filePath)
+    const scopedFilesArray = scopedFiles.split(',').map((item) => item.trim())
     
-    // TO BE REMOVED
-    // Output data
-    console.log(fileContent)
+    // TODO If triggered by PR push, cross-correlate with PR files
+        // Get all files in the PR
+        // https://octokit.github.io/rest.js/v18#pulls-list-files
 
-    // TODO If triggered by PR, validate PR files against scoped files
-    
-        // TODO If triggered by PR...
+        // Get intersect of file paths
 
-            // Get all files in the PR
-            // https://octokit.github.io/rest.js/v18#pulls-list-files
-
-            // Check which files are in scope for the check based on workflow config
-
-            // Pass files (and SHA?) to content parser
-        // TODO If workflow_dispatch
-            // Pass file to content parser
+    // For every applicable file path, run through content parser
+    scopedFilesArray.forEach(async filePath => {
+        await contentParser(octokit, context, filePath)
+    });
 
     /* TODO User output:
         Add comment on PR?
@@ -58,20 +49,17 @@ async function run() {
 
 // Function: Parse content and transform to ascii
 async function contentParser (octokit, context, filePath) {
-    const { data: fileContent } = await octokit.repos.getContent({
+    console.log(`Retrieving file content for file ${filePath} on ref ${context.ref}...`)
+    const { data: fileContentObj } = await octokit.repos.getContent({
         owner: context.repo.owner,
         repo: context.repo.repo,
         ref: context.ref,
         path: filePath
     })
 
-    console.log(`File content retrieved for file ${filePath}: ${fileContent}`)
-
     console.log(`Decoding file content for ${context.ref}/${filePath}...`)
-    const fileContentBuf = new Buffer.from(fileContent.content, fileContent.encoding)
+    const fileContentBuf = new Buffer.from(fileContentObj.content, fileContentObj.encoding)
     const fileContentAscii = fileContentBuf.toString('ascii')
-
-    console.log(fileContentAscii)
 
     return fileContentAscii
 };

@@ -8,7 +8,7 @@ async function run() {
     // Get input parameters
     const scopedFiles = core.getInput('files-in-scope');
     const scopedDirs = core.getInput('dirs-in-scope');
-    const authToken = core.getInput('authToken');
+    const authToken = core.getInput('auth-token');
 
     // Instantiate API client
     // https://octokit.github.io/rest.js/v18#usage   

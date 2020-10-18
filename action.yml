@@ -1,7 +1,7 @@
 name: 'Readability helper'
 description: 'Analyzes your text and returns readability scores'
 inputs:
-  authToken:
+  auth-token:
     description: Authentication token with access to repository
     required: true
   files-in-scope:

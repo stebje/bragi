@@ -7074,35 +7074,36 @@ const github = __webpack_require__(148);
 const { Octokit } = __webpack_require__(460);
 
 async function run() {
-    // Create API client : https://octokit.github.io/rest.js/v18#usage
-    const authToken = core.getInput('authToken');
+    
+    // Get input parameters
+    const scopedFiles = core.getInput('files-in-scope');
+    const scopedDirs = core.getInput('dirs-in-scope');
+    const authToken = core.getInput('auth-token');
+
+    // Instantiate API client
+    // https://octokit.github.io/rest.js/v18#usage   
+    console.log('Instantiating API client...')
     const octokit = new Octokit({
         auth: authToken
     });
 
-    // TODO Get action event
+    // Get GITHUB context
+    console.log('Getting github context...')
+    const context = github.context;
+
+    // Collect scoped files and pass to parser
+    const scopedFilesArray = scopedFiles.split(',').map((item) => item.trim())
     
-        // TODO If triggered by PR...
+    // TODO If triggered by PR push, cross-correlate with PR files
+        // Get all files in the PR
+        // https://octokit.github.io/rest.js/v18#pulls-list-files
 
-            // Get all files in the PR
-            // https://octokit.github.io/rest.js/v18#pulls-list-files
+        // Get intersect of file paths
 
-            // Check which files are in scope for the check based on workflow config
-
-            // Pass files (and SHA?) to content parser
-        // TODO If workflow_dispatch
-            // Pass file to content parser
-
-    // TODO Content parser
-    // Use this to get blob content of a file for a specific SHA commit
-    // https://octokit.github.io/rest.js/v18#git-get-blob
-    /* const b64 = 'IyByZWFkYWJpbGl0eS1tYXRl\n'
-    let buf2 = new Buffer.from(b64, 'base64')
-    console.log(buf2.toString('ascii')) */
-    
-    // TODO Text analyzer
-        //TODO For each blob, calculate scores
-        //TODO Hardcoded 
+    // For every applicable file path, run through content parser
+    scopedFilesArray.forEach(async filePath => {
+        await contentParser(octokit, context, filePath)
+    });
 
     /* TODO User output:
         Add comment on PR?
@@ -7115,6 +7116,31 @@ async function run() {
             TODO API call to inject badge in md file
     */
 }
+
+// Function: Parse content and transform to ascii
+async function contentParser (octokit, context, filePath) {
+    console.log(`Retrieving file content for file ${filePath} on ref ${context.ref}...`)
+    const { data: fileContentObj } = await octokit.repos.getContent({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: context.ref,
+        path: filePath
+    })
+
+    console.log(`Decoding file content for ${context.ref}/${filePath}...`)
+    const fileContentBuf = new Buffer.from(fileContentObj.content, fileContentObj.encoding)
+    const fileContentAscii = fileContentBuf.toString('ascii')
+
+    return fileContentAscii
+};
+
+async function contentAnalyzer () {
+    // TODO
+};
+
+async function commenter () {
+    // TODO
+};
 
 run()
 

@@ -1,9 +1,15 @@
 name: 'Readability helper'
 description: 'Analyzes your text and returns readability scores'
 inputs:
-  authToken:
+  auth-token:
     description: Authentication token with access to repository
     required: true
+  files-in-scope:
+    description: Array of files in scope to be analyzed (relative path)
+    required: false
+  dirs-in-scope:
+    description: Array of directories containing files to be analyzed (relative path)
+    required: false
 
 runs:
   using: 'node12'

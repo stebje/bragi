@@ -1,2 +1,11 @@
-# Ignore node packages
+# node packages
 node_modules/
+
+# workflows (only used for test)
+.github/workflows/
+
+# dotenv environment variables file
+.env
+
+# credentials
+.pem

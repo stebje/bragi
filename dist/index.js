@@ -7131,7 +7131,8 @@ async function contentParser (octokit, context, filePath) {
     const fileContent = octokit.repos.getContent({
         owner: context.repo.owner,
         repo: context.repo.repo,
-        path: `${context.ref}/${filePath}`
+        ref: context.ref,
+        path: filePath
     })
 
     console.log(`File content retrieved for file ${filePath}: ${fileContent}`)

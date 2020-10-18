@@ -12,17 +12,19 @@ async function run() {
 
     // Instantiate API client
     // https://octokit.github.io/rest.js/v18#usage   
-    core.debug('Instantiating API client...')
+    console.log('Instantiating API client...')
     const octokit = new Octokit({
         auth: authToken
     });
 
     // Get GITHUB context
+    console.log('Getting github context...')
     const context = github.context;
 
     // Collect scoped files and pass to parser
     // TODO Add support for arrays
     let filePath = 'README.md'
+    console.log('Calling content parser...')
     const fileContent = await contentParser(octokit, context, filePath)
     
     // TO BE REMOVED
@@ -62,6 +64,9 @@ async function contentParser (octokit, context, filePath) {
         path: `${context.ref}/${filePath}`
     })
 
+    console.log(`File content retrieved for file ${filePath}: ${fileContent}`)
+
+    console.log(`Decoding file content for ${context.ref}/${filePath}...`)
     const fileContentBuf = new Buffer.from(fileContent.data.content, fileContent.data.encoding)
     const fileContentAscii = fileContentBuf.toString('ascii')
 

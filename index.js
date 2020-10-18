@@ -4,13 +4,32 @@ const github = require('@actions/github');
 const { Octokit } = require('@octokit/rest');
 
 async function run() {
-    // Create API client : https://octokit.github.io/rest.js/v18#usage
+    
+    // Get input parameters
+    const scopedFiles = core.getInput('files-in-scope');
+    const scopedDirs = core.getInput('dirs-in-scope');
     const authToken = core.getInput('authToken');
+
+    // Instantiate API client
+    // https://octokit.github.io/rest.js/v18#usage   
+    core.debug('Instantiating API client...')
     const octokit = new Octokit({
         auth: authToken
     });
 
-    // TODO Get action event
+    // Get GITHUB context
+    const context = github.context;
+
+    // Collect scoped files and pass to parser
+    // TODO Add support for arrays
+    let filePath = 'README.md'
+    const fileContent = await contentParser(octokit, context, filePath)
+    
+    // TO BE REMOVED
+    // Output data
+    console.log(fileContent)
+
+    // TODO If triggered by PR, validate PR files against scoped files
     
         // TODO If triggered by PR...
 
@@ -23,17 +42,6 @@ async function run() {
         // TODO If workflow_dispatch
             // Pass file to content parser
 
-    // TODO Content parser
-    // Use this to get blob content of a file for a specific SHA commit
-    // https://octokit.github.io/rest.js/v18#git-get-blob
-    /* const b64 = 'IyByZWFkYWJpbGl0eS1tYXRl\n'
-    let buf2 = new Buffer.from(b64, 'base64')
-    console.log(buf2.toString('ascii')) */
-    
-    // TODO Text analyzer
-        //TODO For each blob, calculate scores
-        //TODO Hardcoded 
-
     /* TODO User output:
         Add comment on PR?
             TODO What info should be in the comment?
@@ -45,5 +53,27 @@ async function run() {
             TODO API call to inject badge in md file
     */
 }
+
+// Function: Parse content and transform to ascii
+async function contentParser (octokit, context, filePath) {
+    const fileContent = octokit.repos.getContent({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        path: `${context.ref}/${filePath}`
+    })
+
+    const fileContentBuf = new Buffer.from(fileContent.data.content, fileContent.data.encoding)
+    const fileContentAscii = fileContentBuf.toString('ascii')
+
+    return fileContentAscii
+};
+
+async function contentAnalyzer () {
+    // TODO
+};
+
+async function commenter () {
+    // TODO
+};
 
 run()

@@ -7140,6 +7140,8 @@ async function contentParser (octokit, context, filePath) {
     const fileContentBuf = new Buffer.from(fileContent.data.content, fileContent.data.encoding)
     const fileContentAscii = fileContentBuf.toString('ascii')
 
+    console.log(fileContentAscii)
+
     return fileContentAscii
 };
 

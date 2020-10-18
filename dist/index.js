@@ -7128,7 +7128,7 @@ async function run() {
 
 // Function: Parse content and transform to ascii
 async function contentParser (octokit, context, filePath) {
-    const { data: fileContent } = octokit.repos.getContent({
+    const { data: fileContent } = await octokit.repos.getContent({
         owner: context.repo.owner,
         repo: context.repo.repo,
         ref: context.ref,

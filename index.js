@@ -1,21 +1,38 @@
-const rs = require('text-readability')
-const core = require('@actions/core')
+const rs = require('text-readability');
+const core = require('@actions/core');
 const github = require('@actions/github');
+const { Octokit } = require('@octokit/rest');
 
 async function run() {
-    //Create API client
+    // Create API client : https://octokit.github.io/rest.js/v18#usage
     const authToken = core.getInput('authToken');
-    const octokit = github.getOctokit(authToken)
+    const octokit = new Octokit({
+        auth: authToken
+    });
 
-    //TODO Get text to be checked
+    // TODO Get action event
+    
+        // TODO If triggered by PR...
 
-        /* TODO Need some conditionals based on directory path and/or file types
-        Also need to account for manually triggered workflows using workflow_dispatch? 
-        */
+            // Get all files in the PR
+            // https://octokit.github.io/rest.js/v18#pulls-list-files
 
-    //TODO Analyze text and calculate score
+            // Check which files are in scope for the check based on workflow config
 
-        //TODO Calculate multiple scores?
+            // Pass files (and SHA?) to content parser
+        // TODO If workflow_dispatch
+            // Pass file to content parser
+
+    // TODO Content parser
+    // Use this to get blob content of a file for a specific SHA commit
+    // https://octokit.github.io/rest.js/v18#git-get-blob
+    /* const b64 = 'IyByZWFkYWJpbGl0eS1tYXRl\n'
+    let buf2 = new Buffer.from(b64, 'base64')
+    console.log(buf2.toString('ascii')) */
+    
+    // TODO Text analyzer
+        //TODO For each blob, calculate scores
+        //TODO Hardcoded 
 
     /* TODO User output:
         Add comment on PR?
@@ -27,12 +44,6 @@ async function run() {
             TODO Create badge
             TODO API call to inject badge in md file
     */
-    
-    let testSentence = 'Hello, this is a test sentence for checking readability. I am writing a terribly complicated sentence without any meaning just to check what happens.'
-    console.log(testSentence)
-
-    let testScore = rs.fleschKincaidGrade(testSentence)
-    console.log(testScore)
 }
 
 run()

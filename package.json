@@ -14,7 +14,11 @@
   "keywords": [
     "readability"
   ],
-  "author": "Steffen Bjerkenås",
+  "author": {
+    "name": "Steffen Bjerkenås",
+    "email": "steffenbj@hotmail.com",
+    "url": "https://www.github.com/stebje"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/stebje/bragi/issues"
@@ -23,6 +27,7 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
+    "@octokit/rest": "^18.0.6",
     "text-readability": "^1.0.5"
   }
 }

@@ -21,8 +21,13 @@ async function run() {
     console.log('Getting github context...')
     const context = github.context;
 
-    // Collect scoped files and pass to parser
+    // Collect scoped directories
+    const scopedDirsArray = scopedDirs.split(',').map((item) => item.trim())
+    console.info(`Directories in scope: ${scopedDirsArray}`)
+
+    // Collect scoped files
     const scopedFilesArray = scopedFiles.split(',').map((item) => item.trim())
+    console.log(`Files in scope: ${scopedFilesArray}`)
     
     // TODO If triggered by PR push, cross-correlate with PR files
         // Get all files in the PR
@@ -32,7 +37,7 @@ async function run() {
 
     // For every applicable file path, run through content parser
     scopedFilesArray.forEach(async filePath => {
-        await contentParser(octokit, context, filePath)
+        await parseContent(octokit, context, filePath)
     });
 
     /* TODO User output:
@@ -48,7 +53,7 @@ async function run() {
 }
 
 // Function: Parse content and transform to ascii
-async function contentParser (octokit, context, filePath) {
+async function parseContent (octokit, context, filePath) {
     console.log(`Retrieving file content for file ${filePath} on ref ${context.ref}...`)
     const { data: fileContentObj } = await octokit.repos.getContent({
         owner: context.repo.owner,
@@ -64,11 +69,15 @@ async function contentParser (octokit, context, filePath) {
     return fileContentAscii
 };
 
-async function contentAnalyzer () {
+async function analyzeContent () {
     // TODO
 };
 
-async function commenter () {
+async function suggestChanges () {
+    // TODO
+}
+
+async function createComment () {
     // TODO
 };
 

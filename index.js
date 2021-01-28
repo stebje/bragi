@@ -79,7 +79,7 @@ async function parseContent (octokit, context, filePath) {
 
 async function analyzeContent () {
     // TODO
-Which rulesets and tools to apply?
+// Which rulesets and tools to apply?
     // https://www.npmjs.com/package/textlint-rule-rousseau
     // https://www.npmjs.com/package/text-readability
 };

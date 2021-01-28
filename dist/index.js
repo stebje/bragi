@@ -7091,13 +7091,22 @@ async function run() {
     console.log('Getting github context...')
     const context = github.context;
 
-    // Collect scoped directories
-    const scopedDirsArray = scopedDirs.split(',').map((item) => item.trim())
-    console.info(`Directories in scope: ${scopedDirsArray}`)
-
     // Collect scoped files
     const scopedFilesArray = scopedFiles.split(',').map((item) => item.trim())
     console.log(`Files in scope: ${scopedFilesArray}`)
+
+    // TODO If wildcards are used, find all matching documents in repository
+    //...
+    
+    // TODO If directories are specified, find all matching documents in repository directories
+    // ...
+
+    // TODO Find union of "wildcards" docs AND "directory" docs, this is the set of applicable docs (directory and wildcard docs could be overlapping)
+    // ... 
+    // If array length == 0 , then exit, else trigger main flow
+
+    // TODO Print all matched docs
+    // ...
     
     // TODO If triggered by PR push, cross-correlate with PR files
         // Get all files in the PR
@@ -7141,6 +7150,9 @@ async function parseContent (octokit, context, filePath) {
 
 async function analyzeContent () {
     // TODO
+    // Which rulesets to apply?
+    // https://www.npmjs.com/package/textlint-rule-rousseau
+    // https://www.npmjs.com/package/text-readability
 };
 
 async function suggestChanges () {

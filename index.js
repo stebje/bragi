@@ -1,28 +1,17 @@
 const rs = require('text-readability');
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { Octokit } = require('@octokit/rest');
 
 async function run() {
     
-    // Get input parameters
-    const scopedFiles = core.getInput('files-in-scope');
-    const authToken = core.getInput('auth-token');
-
-    // Instantiate API client
-    // https://octokit.github.io/rest.js/v18#usage   
-    console.log('Instantiating API client...')
-    const octokit = new Octokit({
-        auth: authToken
-    });
-
-    // Get GITHUB context
-    console.log('Getting github context...')
+    // Initialize
+    const scopedFilesInput = core.getInput('files-in-scope');
+    const authTokenInput = core.getInput('auth-token');
     const context = github.context;
-
-    // Collect scoped files
-    const scopedFilesArray = scopedFiles.split(',').map((item) => item.trim())
-    console.log(`Files in scope: ${scopedFilesArray}`)
+    const scopedFilesArray = scopedFilesInput.split(',').map((item) => item.trim())
+    const octokit = github.getOctokit(authTokenInput)
+    
+    console.log(`File paths defined in input: ${scopedFilesArray}`)
 
     // TODO If wildcards are used, find all matching documents in repository
     //...
@@ -76,6 +65,10 @@ async function parseContent (octokit, context, filePath) {
 
     return fileContentAscii
 };
+
+async function listScopedFiles () {
+    // TODO
+}
 
 async function analyzeContent () {
     // TODO

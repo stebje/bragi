@@ -6409,31 +6409,6 @@ module.exports = {"105":"i","192":"A","193":"A","194":"A","195":"A","196":"A","1
 
 /***/ }),
 
-/***/ 460:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-var core = __webpack_require__(900);
-var pluginRequestLog = __webpack_require__(721);
-var pluginPaginateRest = __webpack_require__(545);
-var pluginRestEndpointMethods = __webpack_require__(198);
-
-const VERSION = "18.0.6";
-
-const Octokit = core.Octokit.plugin(pluginRequestLog.requestLog, pluginRestEndpointMethods.restEndpointMethods, pluginPaginateRest.paginateRest).defaults({
-  userAgent: `octokit-rest.js/${VERSION}`
-});
-
-exports.Octokit = Octokit;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
 /***/ 489:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -7071,29 +7046,17 @@ module.exports = require("events");
 const rs = __webpack_require__(135);
 const core = __webpack_require__(827);
 const github = __webpack_require__(148);
-const { Octokit } = __webpack_require__(460);
 
 async function run() {
     
-    // Get input parameters
-    const scopedFiles = core.getInput('files-in-scope');
-    const scopedDirs = core.getInput('dirs-in-scope');
-    const authToken = core.getInput('auth-token');
-
-    // Instantiate API client
-    // https://octokit.github.io/rest.js/v18#usage   
-    console.log('Instantiating API client...')
-    const octokit = new Octokit({
-        auth: authToken
-    });
-
-    // Get GITHUB context
-    console.log('Getting github context...')
+    // Initialize
+    const scopedFilesInput = core.getInput('files-in-scope');
+    const authTokenInput = core.getInput('auth-token');
     const context = github.context;
-
-    // Collect scoped files
-    const scopedFilesArray = scopedFiles.split(',').map((item) => item.trim())
-    console.log(`Files in scope: ${scopedFilesArray}`)
+    const scopedFilesArray = scopedFilesInput.split(',').map((item) => item.trim())
+    const octokit = github.getOctokit(authTokenInput)
+    
+    console.log(`File paths defined in input: ${scopedFilesArray}`)
 
     // TODO If wildcards are used, find all matching documents in repository
     //...
@@ -7148,9 +7111,13 @@ async function parseContent (octokit, context, filePath) {
     return fileContentAscii
 };
 
+async function listScopedFiles () {
+    // TODO
+}
+
 async function analyzeContent () {
     // TODO
-    // Which rulesets to apply?
+// Which rulesets and tools to apply?
     // https://www.npmjs.com/package/textlint-rule-rousseau
     // https://www.npmjs.com/package/text-readability
 };
@@ -7164,6 +7131,7 @@ async function createComment () {
 };
 
 run()
+
 
 /***/ }),
 
@@ -7925,44 +7893,6 @@ function wrappy (fn, cb) {
     return ret
   }
 }
-
-
-/***/ }),
-
-/***/ 721:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-const VERSION = "1.0.0";
-
-/**
- * @param octokit Octokit instance
- * @param options Options passed to Octokit constructor
- */
-
-function requestLog(octokit) {
-  octokit.hook.wrap("request", (request, options) => {
-    octokit.log.debug("request", options);
-    const start = Date.now();
-    const requestOptions = octokit.request.endpoint.parse(options);
-    const path = requestOptions.url.replace(options.baseUrl, "");
-    return request(options).then(response => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`);
-      return response;
-    }).catch(error => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`);
-      throw error;
-    });
-  });
-}
-requestLog.VERSION = VERSION;
-
-exports.requestLog = requestLog;
-//# sourceMappingURL=index.js.map
 
 
 /***/ }),

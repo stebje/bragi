@@ -11,6 +11,8 @@ async function run() {
 	const octokit = github.getOctokit(authTokenInput)
 	const owner = context.repo.owner
 	const repo = context.repo.repo
+	const resultArray = []
+	const resultObject = {}
 
 	// Initialize constants and defaults
 	const WILDCARDS = ["*"]
@@ -19,20 +21,26 @@ async function run() {
 
 	// Find all PR files
 	// TODO Only get files that have been added or updated (not deleted)
-	const prFilesData = listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
-
+	const prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
+	
 	// TODO Check PR files against scoped files
 	// Collect files in array
 	// If none are found, exit
 
+	// For every applicable file path, run through content parser
+	for (file in scopedFilesArray) {
+		let fileContent = await parseContent(octokit, context, filePath, "ascii")
+		let grade = rs.fleschKincaidGrade(fileContent)
+		console.log(grade)
+	}
+	
+	/* scopedFilesArray.forEach(async (filePath) => {
+		await parseContent(octokit, context, filePath, "ascii")
+	}) */
+
 	// TODO If array is not empty, for each file...
 	// Parse content
 	// Analyze content
-
-	// For every applicable file path, run through content parser
-	scopedFilesArray.forEach(async (filePath) => {
-		await parseContent(octokit, context, filePath, "ascii")
-	})
 
 	/* TODO User output:
         Add comment on PR?

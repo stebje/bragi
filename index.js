@@ -31,17 +31,19 @@ async function run() {
 		throw logMessage("error", error.message)
 	}
 
-	if (_.intersection(prFilesPaths, scopedFilesArray).length == 0) {
+	// TODO Find all filepaths in scoped files, accounting for wildcards
+	//...
+	const scopedFilesPaths = scopedFilesArray // TO BE DELETED after above function is implemented
+
+	// Find overlaps between scoped files and PR files
+	const filePathsToProcess = _.intersection(prFilesPaths, scopedFilesPaths)
+	if (filePathsToProcess.length == 0) {
 		await logMessage("info", "No files in this PR are in scope for the readability check, terminating...")
 		process.exit(0)
 	}
 
-	// TODO Check PR files against scoped files
-	// Collect files in array
-	// If none are found, exit
-
 	// For every applicable file path, run through content parser
-	for (const filePath of scopedFilesArray) {
+	for (const filePath of scopedFilesPaths) {
 		let fileContent = await parseContent(octokit, context, filePath, "ascii")
 		let grade = rs.fleschKincaidGrade(fileContent)
 		console.log(grade)

@@ -7091,16 +7091,16 @@ async function run() {
 	for (const filePath of scopedFilesPaths) {
 		let fileContent = await parseContent(octokit, context, filePath, "ascii")
 		let grade = rs.fleschKincaidGrade(fileContent)
-		console.log(grade)
+		
+		// TODO separate API call below into separate function
+		// TODO compile all results in a single comment
+		await octokit.issues.createComment({
+			owner, 
+			repo, 
+			issue_number: context.payload.pull_request.number,
+			body: `The Flesch Kincaid Grade of file ${filePath} is: ${grade}`
+		})
 	}
-
-	/* scopedFilesArray.forEach(async (filePath) => {
-		await parseContent(octokit, context, filePath, "ascii")
-	}) */
-
-	// TODO If array is not empty, for each file...
-	// Parse content
-	// Analyze content
 
 	/* TODO User output:
         Add comment on PR?

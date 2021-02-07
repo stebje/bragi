@@ -7079,7 +7079,7 @@ async function run() {
 
 	if (_.intersection(prFilesPaths, scopedFilesArray).length == 0) {
 		console.log("No files in this PR are in scope for the readability check...")
-		process.exit(1)
+		process.exit(0)
 		// TODO Call comenter function instead
 	}
 

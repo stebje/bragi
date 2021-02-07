@@ -18,13 +18,21 @@ async function run() {
 	// TODO Find all PR files in latest commit tree
 	// https://octokit.github.io/rest.js/v18#pulls-list-files
 	// Only get files that have been added or updated (not deleted)
-	let prFiles = await octokit.pulls.listFiles({
+	let prFiles = await octokit
+		.paginate(octokit.pulls.listFiles, {
 			owner: context.repo.owner,
 			repo: context.repo.repo,
-			pull_number: context.payload.pull_request.number
+			pull_number: context.payload.pull_request.number,
 		})
+		.then((files) => console.log(files))
 
-	console.log(prFiles)
+	/* 	let prFiles = await octokit.pulls.listFiles({
+		owner: context.repo.owner,
+		repo: context.repo.repo,
+		pull_number: context.payload.pull_request.number,
+	}) */
+
+	//console.log(prFiles)
 
 	// TODO Check PR files against scoped files
 	// Collect files in array

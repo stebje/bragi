@@ -34,7 +34,8 @@ async function run() {
 
 	if (_.intersection(prFilesPaths, scopedFilesArray).length == 0) {
 		//console.log("No files in this PR are in scope for the readability check, terminating...")
-		core.info("\u001b[35mNo files in this PR are in scope for the readability check, terminating...")
+		await logMessage("info", "No files in this PR are in scope for the readability check, terminating...")
+		//core.info("\u001b[35mNo files in this PR are in scope for the readability check, terminating...")
 		// TODO Call commenter function
 		process.exit(0)
 	}
@@ -128,6 +129,36 @@ async function suggestChanges() {
 
 async function createComment() {
 	// TODO
+}
+
+/**
+ * Logs and output a message. Allows styling of log messages according to its type (warning, info etc)
+ * 
+ * @param {"info" | "warning" | "error"} type - The type of message
+ * @param {string} text - The log message text
+ */
+async function logMessage (type, text) {
+	const infoTextColor = "\u001b[35m" // Magenta
+	const warningTextColor = "\u001b[43m" // Yellow
+	const errorTextColor = "\u001b[38;2;255;0;0m" // Red
+
+	const infoTextPrefix = "💡 Info: "
+	const warningTextPrefix = "🔔 Warning: "
+	const errorTextPrefix = "❌ Error: "
+
+	switch (type) {
+		case "info":
+			core.info(`${infoTextColor}${infoTextPrefix}${text}`)
+			break
+		case "warning":
+			core.warning(`${warningTextColor}${warningTextPrefix}${text}`)
+			break
+		case "error":
+			core.error(`${errorTextColor}${errorTextPrefix}${text}`)
+			break
+		default:
+			break
+	}
 }
 
 run()

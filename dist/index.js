@@ -7057,25 +7057,29 @@ async function run() {
 	const octokit = github.getOctokit(authTokenInput)
 	const owner = context.repo.owner
 	const repo = context.repo.repo
-	const resultArray = []
-	const resultObject = {}
+	const fileObjects = []
+	const fileObject = {}
 
 	// Initialize constants and defaults
 	const WILDCARDS = ["*"]
 
 	console.log(`File paths defined in input: ${scopedFilesArray}`)
 
-	// Find all PR files
+	// Find all PR files and collect filepaths in array
 	let prFilesData
 	let prFilesPaths
 	try {
 		prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
 		prFilesPaths = _.pluck(prFilesData, "filename")
 		console.log(prFilesPaths)
-		// TODO filter to exclude files that have been deleted
 	} catch (error) {
 		// TODO Call error handler
 		throw error
+	}
+
+	if (_.intersection(prFilesPaths, scopedFilesArray).length == 0) {
+		console.log("No files in this PR are in scope for the readability check...")
+		// TODO Call comenter function instead
 	}
 
 	// TODO Check PR files against scoped files

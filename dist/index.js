@@ -7078,9 +7078,10 @@ async function run() {
 	}
 
 	if (_.intersection(prFilesPaths, scopedFilesArray).length == 0) {
-		console.log("No files in this PR are in scope for the readability check...")
+		//console.log("No files in this PR are in scope for the readability check, terminating...")
+		core.info("\u001b[35mNo files in this PR are in scope for the readability check, terminating...")
+		// TODO Call commenter function
 		process.exit(0)
-		// TODO Call comenter function instead
 	}
 
 	// TODO Check PR files against scoped files

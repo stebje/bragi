@@ -7054,30 +7054,17 @@ async function run() {
 	const context = github.context
 	const scopedFilesArray = scopedFilesInput.split(",").map((item) => item.trim())
 	const octokit = github.getOctokit(authTokenInput)
+	const owner = context.repo.owner
+	const repo = context.repo.repo
 
 	// Initialize constants and defaults
 	const WILDCARDS = ["*"]
 
 	console.log(`File paths defined in input: ${scopedFilesArray}`)
 
-	// TODO Find all PR files in latest commit tree
-	// https://octokit.github.io/rest.js/v18#pulls-list-files
-	// Only get files that have been added or updated (not deleted)
-	let prFiles = await octokit
-		.paginate(octokit.pulls.listFiles, {
-			owner: context.repo.owner,
-			repo: context.repo.repo,
-			pull_number: context.payload.pull_request.number,
-		})
-		.then((files) => console.log(files))
-
-	/* 	let prFiles = await octokit.pulls.listFiles({
-		owner: context.repo.owner,
-		repo: context.repo.repo,
-		pull_number: context.payload.pull_request.number,
-	}) */
-
-	//console.log(prFiles)
+	// Find all PR files
+	// TODO Only get files that have been added or updated (not deleted)
+	const prFilesData = listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
 
 	// TODO Check PR files against scoped files
 	// Collect files in array
@@ -7121,8 +7108,24 @@ async function parseContent(octokit, context, filePath) {
 	return fileContentAscii
 }
 
-async function listScopedFiles() {
-	// TODO
+/**
+ * Find all PR files
+ * 
+ * @param {Object} octokit 
+ * @param {string} owner 
+ * @param {string} repo 
+ * @param {number} prNumber 
+ * @see https://octokit.github.io/rest.js/v18#pulls-list-files
+ */
+async function listPrFiles(octokit, owner, repo, prNumber) {
+	console.log(`Retrieving files included in PR #${prNumber}...`)
+	const prFiles = await octokit.paginate(octokit.pulls.listFiles, {
+		owner,
+		repo,
+		pull_number: prNumber,
+	})
+
+	return prFiles
 }
 
 async function analyzeContent() {

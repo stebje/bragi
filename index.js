@@ -4,33 +4,29 @@ const github = require('@actions/github');
 
 async function run() {
     
-    // Initialize
+    // Initialize variables
     const scopedFilesInput = core.getInput('files-in-scope');
     const authTokenInput = core.getInput('auth-token');
     const context = github.context;
     const scopedFilesArray = scopedFilesInput.split(',').map((item) => item.trim())
     const octokit = github.getOctokit(authTokenInput)
+
+    // Initialize constants and defaults
+    const WILDCARDS = ['*']
     
     console.log(`File paths defined in input: ${scopedFilesArray}`)
-
-    // TODO If wildcards are used, find all matching documents in repository
-    //...
     
-    // TODO If directories are specified, find all matching documents in repository directories
-    // ...
+		// TODO Find all PR files in latest commit tree
+			// https://octokit.github.io/rest.js/v18#pulls-list-files
+			// Only get files that have been added or updated (not deleted)
 
-    // TODO Find union of "wildcards" docs AND "directory" docs, this is the set of applicable docs (directory and wildcard docs could be overlapping)
-    // ... 
-    // If array length == 0 , then exit, else trigger main flow
+		// TODO Check PR files against scoped files
+			// Collect files in array
+			// If none are found, exit 
 
-    // TODO Print all matched docs
-    // ...
-    
-    // TODO If triggered by PR push, cross-correlate with PR files
-        // Get all files in the PR
-        // https://octokit.github.io/rest.js/v18#pulls-list-files
-
-        // Get intersect of file paths
+		// TODO If array is not empty, for each file...
+			// Parse content
+			// Analyze content
 
     // For every applicable file path, run through content parser
     scopedFilesArray.forEach(async filePath => {

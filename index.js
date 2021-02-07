@@ -21,6 +21,7 @@ async function run() {
 	let prFiles = await octokit.pulls.listFiles({
 			owner: context.repo.owner,
 			repo: context.repo.repo,
+			pull_number: context.payload.pull_request.number
 		})
 
 	console.log(prFiles)

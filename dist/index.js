@@ -7071,7 +7071,7 @@ async function run() {
 	try {
 		prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
 		prFilesPaths = _.pluck(prFilesData, "filename")
-		await logMessage("info", `File paths in pull request: ${scopedFilesArray}`)
+		await logMessage("info", `File paths in pull request: ${prFilesPaths}`)
 	} catch (error) {
 		throw logMessage("error", error.message)
 	}
@@ -7090,15 +7090,14 @@ async function run() {
 	// For every applicable file path, run through content parser
 	for (const filePath of scopedFilesPaths) {
 		let fileContent = await parseContent(octokit, context, filePath, "ascii")
-		let grade = rs.fleschKincaidGrade(fileContent)
-		
+		const score = await analyzeContent(fileContent, "fleschKincaidGrade")
 		// TODO separate API call below into separate function
 		// TODO compile all results in a single comment
 		await octokit.issues.createComment({
 			owner, 
 			repo, 
 			issue_number: context.payload.pull_request.number,
-			body: `The Flesch Kincaid Grade of file ${filePath} is: ${grade}`
+			body: `The Flesch Kincaid Grade of file ${filePath} is: ${score}`
 		})
 	}
 
@@ -7124,7 +7123,7 @@ async function run() {
  * @see https://octokit.github.io/rest.js/v18#pulls-list-files
  */
 async function listPrFiles(octokit, owner, repo, prNumber) {
-	console.log(`Retrieving files included in PR #${prNumber}...`)
+	await logMessage("info", `Retrieving files included in PR #${prNumber}...`)
 	const prFiles = await octokit.paginate(octokit.pulls.listFiles, {
 		owner,
 		repo,
@@ -7145,7 +7144,7 @@ async function listPrFiles(octokit, owner, repo, prNumber) {
  * @see https://octokit.github.io/rest.js/v18#repos-get-content
  */
 async function parseContent(octokit, context, filePath, targetEncoding) {
-	console.log(`Retrieving file content for file ${filePath} on ref ${context.ref}...`)
+	await logMessage("info", `Retrieving file content for file ${filePath} on ref ${context.ref}...`)
 	const { data: fileContentObj } = await octokit.repos.getContent({
 		owner: context.repo.owner,
 		repo: context.repo.repo,
@@ -7153,18 +7152,25 @@ async function parseContent(octokit, context, filePath, targetEncoding) {
 		path: filePath,
 	})
 
-	console.log(`Decoding file content for ${context.ref}/${filePath}...`)
+	await logMessage("info", `Decoding file content for ${context.ref}/${filePath}...`)
 	const fileContentBuf = new Buffer.from(fileContentObj.content, fileContentObj.encoding)
 	const fileContentTargetEncoding = fileContentBuf.toString(`${targetEncoding}`)
 
 	return fileContentTargetEncoding
 }
 
-async function analyzeContent() {
-	// TODO
-	// Which rulesets and tools to apply?
-	// https://www.npmjs.com/package/textlint-rule-rousseau
-	// https://www.npmjs.com/package/text-readability
+/**
+ * Analyze text content according to a specific algorithm.
+ * 
+ * @param {string} filePath 
+ * @param {string} content 
+ * @param {"fleschKincaid" | "fleschReadingEase" | "colemanLiau"} readabilityAlgo 
+ * @return {number} Readability score
+ */
+async function analyzeContent(content, readabilityAlgo) {
+	await logMessage("info", `Calculating ${readabilityAlgo}...`)
+	const score = rs.fleschKincaidGrade(content)
+	return score
 }
 
 async function suggestChanges() {

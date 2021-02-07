@@ -7067,10 +7067,11 @@ async function run() {
 
 	// Find all PR files
 	let prFilesData
-	let prFilesPaths = []
+	let prFilesPaths
 	try {
 		prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
-		console.log(prFilesData)
+		prFilesPaths = _.pluck(prFilesData, "filename")
+		console.log(prFilesPaths)
 		// TODO filter to exclude files that have been deleted
 	} catch (error) {
 		// TODO Call error handler

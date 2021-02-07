@@ -21,9 +21,18 @@ async function run() {
 	console.log(`File paths defined in input: ${scopedFilesArray}`)
 
 	// Find all PR files
-	// TODO Only get files that have been added or updated (not deleted)
-	const prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
-	
+	let prFilesData
+	let prFilesPaths
+	try {
+		prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
+		prFilesPaths = _.pluck(prFilesData, "filename")
+		console.log(prFilesPaths)
+		// TODO filter to exclude files that have been deleted
+	} catch (error) {
+		// TODO Call error handler
+		throw error
+	}
+
 	// TODO Check PR files against scoped files
 	// Collect files in array
 	// If none are found, exit
@@ -34,7 +43,7 @@ async function run() {
 		let grade = rs.fleschKincaidGrade(fileContent)
 		console.log(grade)
 	}
-	
+
 	/* scopedFilesArray.forEach(async (filePath) => {
 		await parseContent(octokit, context, filePath, "ascii")
 	}) */
@@ -57,11 +66,11 @@ async function run() {
 
 /**
  * Find all PR files
- * 
- * @param {Object} octokit 
- * @param {string} owner 
- * @param {string} repo 
- * @param {number} prNumber 
+ *
+ * @param {Object} octokit
+ * @param {string} owner
+ * @param {string} repo
+ * @param {number} prNumber
  * @see https://octokit.github.io/rest.js/v18#pulls-list-files
  */
 async function listPrFiles(octokit, owner, repo, prNumber) {
@@ -77,11 +86,11 @@ async function listPrFiles(octokit, owner, repo, prNumber) {
 
 /**
  * Parse content and transform to target encoding
- * 
- * @param {*} octokit 
- * @param {*} context 
- * @param {string} filePath 
- * @param {string} targetEncoding 
+ *
+ * @param {*} octokit
+ * @param {*} context
+ * @param {string} filePath
+ * @param {string} targetEncoding
  * @see https://octokit.github.io/rest.js/v18#repos-get-content
  */
 async function parseContent(octokit, context, filePath, targetEncoding) {

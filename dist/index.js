@@ -7073,7 +7073,7 @@ async function run() {
 	// If none are found, exit
 
 	// For every applicable file path, run through content parser
-	for (file in scopedFilesArray) {
+	for (const filePath of scopedFilesArray) {
 		let fileContent = await parseContent(octokit, context, filePath, "ascii")
 		let grade = rs.fleschKincaidGrade(fileContent)
 		console.log(grade)

@@ -7063,7 +7063,7 @@ async function run() {
 	// Initialize constants and defaults
 	const WILDCARDS = ["*"]
 
-	console.log(`File paths defined in input: ${scopedFilesArray}`)
+	await logMessage("info", `File paths defined in workflow input: ${scopedFilesArray}`)
 
 	// Find all PR files and collect filepaths in array
 	let prFilesData
@@ -7071,17 +7071,13 @@ async function run() {
 	try {
 		prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
 		prFilesPaths = _.pluck(prFilesData, "filename")
-		console.log(prFilesPaths)
+		await logMessage("info", `File paths in pull request: ${scopedFilesArray}`)
 	} catch (error) {
-		// TODO Call error handler
-		throw error
+		throw logMessage("error", error.message)
 	}
 
 	if (_.intersection(prFilesPaths, scopedFilesArray).length == 0) {
-		//console.log("No files in this PR are in scope for the readability check, terminating...")
 		await logMessage("info", "No files in this PR are in scope for the readability check, terminating...")
-		//core.info("\u001b[35mNo files in this PR are in scope for the readability check, terminating...")
-		// TODO Call commenter function
 		process.exit(0)
 	}
 
@@ -7143,6 +7139,7 @@ async function listPrFiles(octokit, owner, repo, prNumber) {
  * @param {*} context
  * @param {string} filePath
  * @param {string} targetEncoding
+ * @returns {string} Encoded text
  * @see https://octokit.github.io/rest.js/v18#repos-get-content
  */
 async function parseContent(octokit, context, filePath, targetEncoding) {

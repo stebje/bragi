@@ -7131,7 +7131,7 @@ async function parseContent(octokit, context, filePath, targetEncoding) {
 
 	console.log(`Decoding file content for ${context.ref}/${filePath}...`)
 	const fileContentBuf = new Buffer.from(fileContentObj.content, fileContentObj.encoding)
-	const fileContentTargetEncoding = fileContentBuf.toString(`${targetEncoding}`)
+	const fileContentTargetEncoding = fileContentBuf.toString(`"${targetEncoding}"`)
 
 	return fileContentTargetEncoding
 }

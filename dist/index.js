@@ -7091,23 +7091,6 @@ async function run() {
     */
 }
 
-// Function: Parse content and transform to ascii
-async function parseContent(octokit, context, filePath) {
-	console.log(`Retrieving file content for file ${filePath} on ref ${context.ref}...`)
-	const { data: fileContentObj } = await octokit.repos.getContent({
-		owner: context.repo.owner,
-		repo: context.repo.repo,
-		ref: context.ref,
-		path: filePath,
-	})
-
-	console.log(`Decoding file content for ${context.ref}/${filePath}...`)
-	const fileContentBuf = new Buffer.from(fileContentObj.content, fileContentObj.encoding)
-	const fileContentAscii = fileContentBuf.toString("ascii")
-
-	return fileContentAscii
-}
-
 /**
  * Find all PR files
  * 
@@ -7126,6 +7109,31 @@ async function listPrFiles(octokit, owner, repo, prNumber) {
 	})
 
 	return prFiles
+}
+
+/**
+ * Parse content and transform to target encoding
+ * 
+ * @param {*} octokit 
+ * @param {*} context 
+ * @param {string} filePath 
+ * @param {string} targetEncoding 
+ * @see https://octokit.github.io/rest.js/v18#repos-get-content
+ */
+async function parseContent(octokit, context, filePath, targetEncoding) {
+	console.log(`Retrieving file content for file ${filePath} on ref ${context.ref}...`)
+	const { data: fileContentObj } = await octokit.repos.getContent({
+		owner: context.repo.owner,
+		repo: context.repo.repo,
+		ref: context.ref,
+		path: filePath,
+	})
+
+	console.log(`Decoding file content for ${context.ref}/${filePath}...`)
+	const fileContentBuf = new Buffer.from(fileContentObj.content, fileContentObj.encoding)
+	const fileContentTargetEncoding = fileContentBuf.toString(`${targetEncoding}`)
+
+	return fileContentTargetEncoding
 }
 
 async function analyzeContent() {

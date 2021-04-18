@@ -6,10 +6,7 @@ inputs:
     required: true
   files-in-scope:
     description: Array of files in scope to be analyzed (relative path)
-    required: false
-  dirs-in-scope:
-    description: Array of directories containing files to be analyzed (relative path)
-    required: false
+    required: true
 
 runs:
   using: 'node12'

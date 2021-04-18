@@ -5,35 +5,30 @@ const github = require("@actions/github")
 const glob = require("@actions/glob")
 
 async function run() {
-	// Initialize variables
+	// Get Actions inputs
 	const scopedFilesInput = core.getInput("files-in-scope")
 	const authTokenInput = core.getInput("auth-token")
-	const context = github.context
 	const scopedFilesArray = scopedFilesInput.split(",").map((item) => item.trim())
+	await logMessage("info", `File paths defined in workflow input: ${scopedFilesArray}`)
+	
+	// Instantiate octokit client
 	const octokit = github.getOctokit(authTokenInput)
+
+	// Get context data
+	const context = github.context
 	const owner = context.repo.owner
 	const repo = context.repo.repo
-	const fileObjects = []
-	const fileObject = {}
-
-	// Initialize constants and defaults
-	const WILDCARDS = ["*"]
-
-	await logMessage("info", `File paths defined in workflow input: ${scopedFilesArray}`)
 
 	// Find all PR files and collect filepaths in array
-	let prFilesData
-	let prFilesPaths
 	try {
-		prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
-		prFilesPaths = _.pluck(prFilesData, "filename")
+		const prFilesData = await listPrFiles(octokit, owner, repo, context.payload.pull_request.number)
+		const prFilesPaths = _.pluck(prFilesData, "filename")
 		await logMessage("info", `File paths in pull request: ${prFilesPaths}`)
 	} catch (error) {
 		throw logMessage("error", error.message)
 	}
 
-	// TODO Find all filepaths in scoped files, accounting for wildcards
-	//...
+	// Find all filepaths in scoped files, accounting for wildcards
 	const scopedFilesPaths = scopedFilesArray // TO BE DELETED after above function is implemented
 
 	// Find overlaps between scoped files and PR files
@@ -68,6 +63,9 @@ async function run() {
             TODO API call to inject badge in md file
     */
 }
+
+
+// Function defs
 
 /**
  * Find all PR files

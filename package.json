@@ -1,6 +1,6 @@
 {
   "name": "bragi",
-  "version": "1.0.0",
+  "version": "0.4.0",
   "description": "A GitHub Action that helps you write better documentation.",
   "main": "index.js",
   "scripts": {

@@ -2,6 +2,7 @@ const rs = require("text-readability")
 const _ = require("underscore")
 const core = require("@actions/core")
 const github = require("@actions/github")
+const glob = require("@actions/glob")
 
 async function run() {
 	// Initialize variables

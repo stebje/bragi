@@ -27,6 +27,7 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
+    "@actions/glob": "^0.1.1",
     "@octokit/rest": "^18.0.6",
     "text-readability": "^1.0.5",
     "underscore": "^1.12.0"
